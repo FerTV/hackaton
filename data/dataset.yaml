@@ -4,4 +4,4 @@ train: /home/fer/Documentos/cyberdatalab/hackaton/yolo_def/data/processed/counte
 val: /home/fer/Documentos/cyberdatalab/hackaton/yolo_def/data/processed/counterfeit-nike/images/val
 nc: 1
 names:
-  - counterfeit_nike_y11
+  - counterfeit_nike_def
