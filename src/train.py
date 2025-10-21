@@ -35,13 +35,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dataset-dir",
         type=Path,
-        default=Path("data/datasets/counterfeit-nike"),
+        default=Path("data/datasets/nike"),
         help="Path to the raw dataset (expected structure: images/<split>, labels/<split>).",
     )
     parser.add_argument(
         "--processed-dataset-dir",
         type=Path,
-        default=Path("data/processed/counterfeit-nike"),
+        default=Path("data/processed/nike"),
         help="Where to materialise the remapped dataset used for training.",
     )
     parser.add_argument(
@@ -56,14 +56,14 @@ def parse_args() -> argparse.Namespace:
         default=Path("config/yolo11n-2xhead.yaml"),
         help="Location of the dual-head YOLO11 config file (created automatically if missing).",
     )
-    parser.add_argument("--dataset-name", default="counterfeit_nike", help="Name used for logging/tracking runs.")
+    parser.add_argument("--dataset-name", default="nike", help="Name used for logging/tracking runs.")
     parser.add_argument(
         "--class-names",
         nargs="+",
         help="Optional override for class names (one per class after remapping).",
     )
     parser.add_argument("--epochs", type=int, default=100, help="Number of training epochs.")
-    parser.add_argument("--imgsz", type=int, default=640, help="Training image size.")
+    parser.add_argument("--imgsz", type=int, default=320, help="Training image size.")
     parser.add_argument("--freeze", type=int, default=23, help="Number of layers to freeze during training.")
     parser.add_argument(
         "--base-model",
