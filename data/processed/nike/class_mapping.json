@@ -1,0 +1,9 @@
+{
+  "source_dataset": "/home/fer/Documentos/cyberdatalab/hackaton/yolo_def/data/datasets/nike",
+  "class_id_map": {
+    "80": 0
+  },
+  "class_names": [
+    "nike"
+  ]
+}
