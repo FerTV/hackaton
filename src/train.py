@@ -64,6 +64,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--epochs", type=int, default=100, help="Number of training epochs.")
     parser.add_argument("--imgsz", type=int, default=320, help="Training image size.")
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=16,
+        help="Batch size used by Ultralytics during training.",
+    )
     parser.add_argument("--freeze", type=int, default=23, help="Number of layers to freeze during training.")
     parser.add_argument(
         "--base-model",
@@ -140,6 +146,7 @@ def main() -> None:
         freeze_layers=args.freeze,
         epochs=args.epochs,
         imgsz=args.imgsz,
+        batch_size=args.batch_size,
         output_dir=paths.output_dir,
         dataset_name=args.dataset_name,
         base_model=args.base_model,
