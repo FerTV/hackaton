@@ -1,9 +1,0 @@
-{
-  "source_dataset": "/home/fer/Documentos/cyberdatalab/hackaton/yolo_def/data/datasets/counterfeit-nike",
-  "class_id_map": {
-    "80": 0
-  },
-  "class_names": [
-    "counterfeit_nike_def"
-  ]
-}
