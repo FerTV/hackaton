@@ -21,11 +21,8 @@ def build_full_class_names(new_class_names: Sequence[str]) -> list[str]:
     return list(COCO_NAMES) + list(new_class_names)
 
 
-def train_and_merge(
-    config_path: Path,
+def train_model(
     data_yaml: Path,
-    added_classes: int,
-    new_class_names: Sequence[str],
     freeze_layers: int,
     epochs: int,
     imgsz: int,
@@ -33,8 +30,8 @@ def train_and_merge(
     output_dir: Path,
     dataset_name: str,
     base_model: str,
-) -> Dict[str, Path | None]:
-    """Train the custom head, merge it into the dual-head model, and export artefacts."""
+) -> Dict[str, Path]:
+    """Fine-tune the new detection head and export the remapped weights."""
 
     try:
         from ultralytics import YOLO
@@ -111,6 +108,31 @@ def train_and_merge(
     torch.save(head_weights, head_weights_path)
     logger.info("Saved remapped head weights to %s", head_weights_path)
 
+    return {
+        "best_weights": best_weights,
+        "head_weights": head_weights_path,
+    }
+
+
+def merge_model(
+    config_path: Path,
+    head_weights_path: Path,
+    new_class_names: Sequence[str],
+    output_dir: Path,
+    dataset_name: str,
+    base_model: str,
+) -> Dict[str, Path]:
+    """Load the dual-head configuration, inject the trained head, and persist artefacts."""
+
+    try:
+        from ultralytics import YOLO
+    except ImportError as exc:
+        raise RuntimeError("Ultralytics package is not importable. Install it before running this script.") from exc
+
+    import torch
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
     merged_model = YOLO(str(config_path), task="detect").load(base_model)
 
     state_dict = torch.load(head_weights_path, map_location="cpu")
@@ -128,7 +150,45 @@ def train_and_merge(
     logger.info("Merged model saved to %s", merged_weights_path)
 
     return {
-        "best_weights": best_weights,
-        "head_weights": head_weights_path,
         "merged_weights": merged_weights_path,
     }
+
+
+def train_and_merge(
+    config_path: Path,
+    data_yaml: Path,
+    new_class_names: Sequence[str],
+    freeze_layers: int,
+    epochs: int,
+    imgsz: int,
+    batch_size: int,
+    output_dir: Path,
+    dataset_name: str,
+    base_model: str,
+) -> Dict[str, Path | None]:
+    """Train the custom head, merge it into the dual-head model, and export artefacts."""
+
+    training_summary = train_model(
+        data_yaml=data_yaml,
+        freeze_layers=freeze_layers,
+        epochs=epochs,
+        imgsz=imgsz,
+        batch_size=batch_size,
+        output_dir=output_dir,
+        dataset_name=dataset_name,
+        base_model=base_model,
+    )
+
+    merge_summary = merge_model(
+        config_path=config_path,
+        head_weights_path=training_summary["head_weights"],
+        new_class_names=new_class_names,
+        output_dir=output_dir,
+        dataset_name=dataset_name,
+        base_model=base_model,
+    )
+
+    summary: Dict[str, Path | None] = {}
+    summary.update(training_summary)
+    summary.update(merge_summary)
+    return summary

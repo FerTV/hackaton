@@ -35,13 +35,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dataset-dir",
         type=Path,
-        default=Path("data/datasets/nike"),
+        default=Path("data/datasets/drones"),
         help="Path to the raw dataset (expected structure: images/<split>, labels/<split>).",
     )
     parser.add_argument(
         "--processed-dataset-dir",
         type=Path,
-        default=Path("data/processed/nike"),
+        default=Path("data/processed/drones"),
         help="Where to materialise the remapped dataset used for training.",
     )
     parser.add_argument(
@@ -56,7 +56,7 @@ def parse_args() -> argparse.Namespace:
         default=Path("config/yolo11n-2xhead.yaml"),
         help="Location of the dual-head YOLO11 config file (created automatically if missing).",
     )
-    parser.add_argument("--dataset-name", default="nike", help="Name used for logging/tracking runs.")
+    parser.add_argument("--dataset-name", default="drones", help="Name used for logging/tracking runs.")
     parser.add_argument(
         "--class-names",
         nargs="+",
@@ -141,7 +141,6 @@ def main() -> None:
     summary = train_and_merge(
         config_path=paths.config_path,
         data_yaml=paths.dataset_yaml,
-        added_classes=added_classes,
         new_class_names=class_names,
         freeze_layers=args.freeze,
         epochs=args.epochs,
